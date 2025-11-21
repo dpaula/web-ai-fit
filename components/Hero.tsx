@@ -77,7 +77,8 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 </div>
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 p-[2px]">
                   <div className="w-full h-full rounded-full bg-dark-800 flex items-center justify-center overflow-hidden">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Macia&backgroundColor=128c7e" alt="Mácia" className="w-full h-full" />
+                    {/* Local Macia Avatar */}
+                    <img src="/images/macia-avatar.svg" alt="Mácia" className="w-full h-full p-0.5" />
                   </div>
                 </div>
                 <div className="flex-1">
@@ -87,7 +88,8 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
               </div>
 
               {/* Chat Content */}
-              <div className="h-full bg-dark-950 p-4 space-y-4 overflow-hidden bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-5">
+              {/* CSS Background Pattern instead of external image */}
+              <div className="h-full bg-dark-950 p-4 space-y-4 overflow-hidden" style={{backgroundImage: 'radial-gradient(#1f2937 1px, transparent 1px)', backgroundSize: '20px 20px'}}>
                 
                 {/* Date Divider */}
                 <div className="flex justify-center mb-4">
@@ -107,8 +109,9 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 {/* Message: User Image */}
                 <div className="flex justify-end">
                   <div className="bg-[#005c4b] p-1 rounded-l-lg rounded-tr-none rounded-br-lg max-w-[85%] shadow">
-                     <div className="relative rounded overflow-hidden aspect-[4/3] bg-gray-800">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Salad" className="object-cover w-full h-full" />
+                     <div className="relative rounded overflow-hidden aspect-[4/3] bg-gray-800 border border-[#005c4b]">
+                        {/* Local Salad Image */}
+                        <img src="/images/salad-bowl.svg" alt="Salad" className="object-cover w-full h-full" />
                      </div>
                      <div className="text-[10px] text-gray-300 text-right p-1 flex justify-end items-center gap-1">
                       12:30 <span className="text-brand-300">✓✓</span>

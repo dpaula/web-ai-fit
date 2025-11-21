@@ -7,19 +7,19 @@ export const Testimonials: React.FC = () => {
       name: "Beatriz Souza",
       role: "Perdeu 4kg em 3 semanas",
       text: "Eu sempre esquecia de abrir o app de dieta. No WhatsApp é impossível esquecer porque uso o dia todo. A Mácia é muito simpática!",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80"
+      avatar: "/images/avatar-beatriz.svg"
     },
     {
       name: "Rafael Mendes",
       role: "Praticante de Crossfit",
       text: "A precisão dos macros me surpreendeu. Eu tiro foto do prato e ela já me diz quanto de proteína tem. Essencial pra minha rotina.",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80"
+      avatar: "/images/avatar-rafael.svg"
     },
     {
       name: "Dra. Elena Costa",
       role: "Nutricionista Parceira",
       text: "Recomendo para todos os meus pacientes. A adesão ao plano alimentar aumenta drasticamente quando a barreira de entrada é menor.",
-      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80"
+      avatar: "/images/avatar-elena.svg"
     }
   ];
 
