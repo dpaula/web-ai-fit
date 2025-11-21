@@ -26,22 +26,23 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
-              Seu Nutricionista <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-pastel-blue">
-                Agora no WhatsApp
-              </span>
+              Entre na Lista de Espera
             </h1>
             
-            <p className="text-lg text-gray-400 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Converse com a <strong>Mácia AI</strong>, envie áudios das suas refeições e receba cálculos de calorias e macros instantaneamente. Sem apps complicados.
+            <p className="text-lg text-gray-300 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Já no ar e liberando acessos aos poucos: fale com a <strong>Mácia AI</strong> por áudio, ela entende, registra calorias e macros na hora, mostra saldo diário e evolução semanal — tudo direto no WhatsApp, sem instalar app.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-12">
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-3">
               <Button onClick={onCtaClick} className="w-full sm:w-auto text-lg h-14 px-8 bg-brand-500 hover:bg-brand-600 text-white rounded-full shadow-[0_0_30px_-5px_rgba(37,211,102,0.4)]">
                 Entrar na Lista de Espera
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </div>
+
+            <p className="text-sm text-brand-200 mb-12 max-w-xl mx-auto lg:mx-0">
+              Liberamos novos grupos toda semana. Cadastre-se para entrar no próximo lote; usar seu convite garante +1 semana grátis acumulativa já no onboarding.
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-800 pt-8">
               {[
@@ -55,6 +56,10 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 </div>
               ))}
             </div>
+
+            <p className="text-xs text-gray-500 mt-6 max-w-xl mx-auto lg:mx-0">
+              Indique amigos e ganhe semanas grátis — cada indicação concluída soma +1 semana, 100% acumulativas.
+            </p>
           </div>
 
           {/* Mobile Mockup - WhatsApp Style */}
