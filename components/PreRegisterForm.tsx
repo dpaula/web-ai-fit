@@ -39,10 +39,12 @@ export const PreRegisterForm: React.FC = () => {
     setIsLoading(true);
     setPhoneConflict(null);
     try {
+      const trimmedEmail = data.email?.trim() || undefined;
+
       const response = await submitPreCadastro({
         nome: data.name,
         telefone: data.phone,
-        email: data.email,
+        email: trimmedEmail,
         codigoConviteIndicador: referralCode || undefined,
         urlOrigem: "lp-principal"
       });
@@ -229,7 +231,7 @@ export const PreRegisterForm: React.FC = () => {
                   <Mail className="absolute left-4 top-3.5 text-gray-500 w-5 h-5" />
                   <input
                     {...register("email", {
-                      pattern: /^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$/i
+                      pattern: /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/i
                     })}
                     type="email"
                     className="w-full bg-dark-900 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
