@@ -17,6 +17,8 @@ export const PreRegisterForm: React.FC = () => {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [phoneConflict, setPhoneConflict] = useState<string | null>(null);
+  const [shake, setShake] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormInputs>();
 
@@ -35,6 +37,7 @@ export const PreRegisterForm: React.FC = () => {
 
   const onSubmit = async (data: FormInputs) => {
     setIsLoading(true);
+    setPhoneConflict(null);
     try {
       const response = await submitPreCadastro({
         nome: data.name,
@@ -48,9 +51,11 @@ export const PreRegisterForm: React.FC = () => {
     } catch (error) {
       const message = String(error);
       if (message.includes('409') && message.toLowerCase().includes('já existe')) {
-        alert("Este telefone já está na lista de cadastrados. Você já garantiu seu lugar!");
+        setPhoneConflict("Este telefone já está na lista de cadastrados. Você já garantiu seu lugar!");
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
       } else {
-        alert("Erro ao realizar cadastro. Tente novamente.");
+        setPhoneConflict("Erro ao realizar cadastro. Tente novamente.");
       }
     } finally {
       setIsLoading(false);
@@ -132,18 +137,23 @@ export const PreRegisterForm: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 ml-1">Seu WhatsApp</label>
-                <div className="relative">
-                  <Smartphone className="absolute left-4 top-3.5 text-gray-500 w-5 h-5" />
-                  <input
-                    {...register("phone", { required: true, pattern: /^\(\d{2}\) \d{5}-\d{4}$/ })}
-                    onChange={(e) => setValue('phone', formatPhone(e.target.value))}
-                    className="w-full bg-dark-900 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                    placeholder="(11) 99999-9999"
-                    maxLength={15}
-                  />
-                </div>
-                {errors.phone && <span className="text-red-500 text-xs mt-1 ml-1">WhatsApp inválido</span>}
+              <div className="relative">
+                <Smartphone className="absolute left-4 top-3.5 text-gray-500 w-5 h-5" />
+                <input
+                  {...register("phone", { required: true, pattern: /^\(\d{2}\) \d{5}-\d{4}$/ })}
+                  onChange={(e) => setValue('phone', formatPhone(e.target.value))}
+                  className={`w-full bg-dark-900 border ${phoneConflict ? 'border-red-500 ring-2 ring-red-500/40' : 'border-gray-700 focus:ring-brand-500 focus:border-transparent'} rounded-xl py-3 pl-12 pr-4 text-white focus:ring-2 outline-none transition-all ${shake ? 'animate-[shake_0.2s_ease-in-out_2]' : ''}`}
+                  placeholder="(11) 99999-9999"
+                  maxLength={15}
+                />
               </div>
+              {errors.phone && <span className="text-red-500 text-xs mt-1 ml-1">WhatsApp inválido</span>}
+              {phoneConflict && (
+                <p className="text-red-400 text-xs mt-2 ml-1 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+                  {phoneConflict}
+                </p>
+              )}
+            </div>
 
               <Button type="submit" fullWidth isLoading={isLoading} className="h-12 text-lg shadow-lg shadow-brand-500/20">
                 <Send className="w-4 h-4 mr-2" />
