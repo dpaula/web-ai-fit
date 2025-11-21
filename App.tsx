@@ -2,6 +2,7 @@ import React from 'react';
 import { Hero } from './components/Hero';
 import { Features } from './components/Features';
 import { Testimonials } from './components/Testimonials';
+import { FAQ } from './components/FAQ';
 import { PreRegisterForm } from './components/PreRegisterForm';
 import { Footer } from './components/Footer';
 import { Logo } from './components/Logo';
@@ -28,6 +29,7 @@ function App() {
         <Hero onCtaClick={scrollToForm} />
         <Features />
         <Testimonials />
+        <FAQ />
         <PreRegisterForm />
       </main>
 

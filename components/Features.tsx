@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListChecks, UserPlus, LineChart, Zap, Camera, Lock } from 'lucide-react';
+import { ListChecks, UserPlus, LineChart, Zap, Mic, Lock } from 'lucide-react';
 
 export const Features: React.FC = () => {
   const steps = [
@@ -20,7 +20,7 @@ export const Features: React.FC = () => {
     {
       id: "03",
       title: "Registro & Evolução",
-      description: "Envie fotos ou áudios das suas refeições. A IA calcula tudo e gera gráficos de evolução semanal.",
+      description: "Envie áudios das suas refeições. A IA transcreve, calcula tudo e gera gráficos de evolução semanal.",
       icon: <LineChart className="w-6 h-6" />,
       highlight: "Feedback em tempo real."
     }
@@ -78,10 +78,10 @@ export const Features: React.FC = () => {
         <div className="bg-gradient-to-br from-brand-900/20 to-dark-800 rounded-3xl p-8 md:p-12 border border-brand-500/10">
            <div className="grid md:grid-cols-3 gap-12">
               <div className="flex gap-4">
-                 <div className="bg-brand-500/10 p-3 rounded-lg h-fit text-brand-500"><Camera /></div>
+                 <div className="bg-brand-500/10 p-3 rounded-lg h-fit text-brand-500"><Mic /></div>
                  <div>
-                    <h4 className="text-white font-bold text-lg mb-2">Foto Caloria</h4>
-                    <p className="text-gray-400 text-sm">Nossa visão computacional identifica alimentos no prato e estima porções com alta precisão.</p>
+                    <h4 className="text-white font-bold text-lg mb-2">Áudio Nutri</h4>
+                    <p className="text-gray-400 text-sm">Grave um áudio descrevendo a refeição. A IA entende, registra e já calcula macros e calorias.</p>
                  </div>
               </div>
               <div className="flex gap-4">

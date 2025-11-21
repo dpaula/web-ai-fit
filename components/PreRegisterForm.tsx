@@ -70,8 +70,8 @@ export const PreRegisterForm: React.FC = () => {
             </div>
             
             <h3 className="text-2xl font-bold text-white mb-2">Cadastro Confirmado!</h3>
-            <p className="text-gray-400 mb-8">
-              Você está na fila. Ganhe prioridade indicando amigos:
+            <p className="text-gray-400 mb-6">
+              Você está na fila. Ganhe <strong className="text-brand-400">1 semana grátis</strong> ao indicar um amigo.
             </p>
             
             <div className="bg-dark-950 p-4 rounded-xl border border-gray-800 mb-6">
@@ -83,6 +83,9 @@ export const PreRegisterForm: React.FC = () => {
                  <button onClick={handleCopyLink} className="text-gray-400 hover:text-white">
                     {copied ? <Check size={18} /> : <Copy size={18} />}
                  </button>
+               </div>
+               <div className="mt-3 text-left text-xs text-brand-200 bg-brand-500/10 border border-brand-500/20 rounded-lg px-3 py-2">
+                 Ganhe 1 semana grátis quando o seu amigo concluir o cadastro pelo link.
                </div>
             </div>
 
@@ -102,10 +105,10 @@ export const PreRegisterForm: React.FC = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-xl mx-auto">
-          <div className="text-center mb-10">
+         <div className="text-center mb-10">
              <h2 className="text-3xl font-bold text-white mb-4">Entre na Lista de Espera</h2>
-             <p className="text-gray-400">Cadastre-se para garantir <span className="text-brand-400 font-bold">1 semana grátis</span> quando lançarmos.</p>
-          </div>
+             <p className="text-gray-400">Cadastre-se para garantir seu lugar. <span className="text-brand-400 font-bold">Ganhe 1 semana grátis ao indicar um amigo</span> quando lançarmos.</p>
+         </div>
 
           <div className="bg-dark-800 p-8 rounded-3xl border border-gray-700 shadow-2xl">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
