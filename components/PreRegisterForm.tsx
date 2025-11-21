@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Check, Copy, Share2, Smartphone, User, Send } from 'lucide-react';
+import { Check, Copy, Share2, Smartphone, User, Send, Mail } from 'lucide-react';
 import { Button } from './Button';
 import { submitPreCadastro } from '../services/api';
 import { PreCadastroResponse } from '../types';
@@ -222,6 +222,22 @@ export const PreRegisterForm: React.FC = () => {
                 </p>
               )}
             </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2 ml-1">E-mail (opcional)</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-3.5 text-gray-500 w-5 h-5" />
+                  <input
+                    {...register("email", {
+                      pattern: /^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,}$/i
+                    })}
+                    type="email"
+                    className="w-full bg-dark-900 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    placeholder="voce@exemplo.com"
+                  />
+                </div>
+                {errors.email && <span className="text-red-500 text-xs mt-1 ml-1">E-mail inválido</span>}
+              </div>
 
               <Button type="submit" fullWidth isLoading={isLoading} className="h-12 text-lg shadow-lg shadow-brand-500/20">
                 <Send className="w-4 h-4 mr-2" />
