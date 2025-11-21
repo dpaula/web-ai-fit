@@ -1,89 +1,104 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AI Fit - Nutricionista Inteligente no WhatsApp</title>
-    <meta name="description" content="O primeiro nutricionista por IA que funciona 100% no WhatsApp. Sem apps complicados." />
-    
-    <!-- Local Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
-    <link rel="alternate icon" href="/favicons/favicon.svg" />
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Fit - Nutricionista Inteligente no WhatsApp</title>
+  <meta name="description"
+    content="O primeiro nutricionista por IA que funciona 100% no WhatsApp. Sem apps complicados." />
+
+  <!-- Local Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+  <link rel="alternate icon" href="/favicons/favicon.svg" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#a8d5ca', // Pastel Blue/Green Accents
+              400: '#4ade80',
+              500: '#25D366', // WhatsApp Green Official
+              600: '#128C7E', // WhatsApp Teal Dark
+              700: '#046c4e',
+              800: '#065f46',
+              900: '#064e3b',
             },
-            colors: {
-              brand: {
-                50: '#f0fdf4',
-                100: '#dcfce7',
-                200: '#bbf7d0',
-                300: '#a8d5ca', // Pastel Blue/Green Accents
-                400: '#4ade80',
-                500: '#25D366', // WhatsApp Green Official
-                600: '#128C7E', // WhatsApp Teal Dark
-                700: '#046c4e',
-                800: '#065f46',
-                900: '#064e3b',
-              },
-              pastel: {
-                blue: '#a8d5ca',
-                green: '#dcfce7',
-              },
-              dark: {
-                950: '#0a1014', // Deep dark background (WhatsApp Dark Theme vibe)
-                900: '#111b21', // Secondary dark
-                800: '#202c33', // Chat bubble incoming
-                700: '#2a3942', // Input background
-              }
+            pastel: {
+              blue: '#a8d5ca',
+              green: '#dcfce7',
             },
-            backgroundImage: {
-              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-              'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #128C7E 0deg, #25D366 180deg, #128C7E 360deg)',
+            dark: {
+              950: '#0a1014', // Deep dark background (WhatsApp Dark Theme vibe)
+              900: '#111b21', // Secondary dark
+              800: '#202c33', // Chat bubble incoming
+              700: '#2a3942', // Input background
             }
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #128C7E 0deg, #25D366 180deg, #128C7E 360deg)',
           }
         }
       }
-    </script>
-    <style>
-      body {
-        background-color: #0a1014;
-        color: #e9edef;
-        font-feature-settings: "ss01", "ss02", "cv01", "cv02";
-        -webkit-font-smoothing: antialiased;
-      }
-      
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0a1014;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #202c33;
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #374045;
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0a1014;
+      color: #e9edef;
+      font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0a1014;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #202c33;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374045;
+    }
+
+    /* Animations */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
       }
 
-      /* Animations */
-      @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
+      50% {
+        transform: translateY(-10px);
       }
-      .animate-float {
-        animation: float 6s ease-in-out infinite;
+
+      100% {
+        transform: translateY(0px);
       }
-    </style>
+    }
+
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -96,8 +111,11 @@
   }
 }
 </script>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>
