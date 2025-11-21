@@ -21,7 +21,7 @@
 - Erros HTTP lançam exceção; UI mostra `alert` genérico.
 
 ## Stack principal
-- Runtime: Node.js (versão não fixada; use LTS 18/20).
+- Runtime: Node.js (>=20.19 requisitado pelo @vitejs/plugin-react).
 - Bundler/dev server: **Vite 6**.
 - Linguagem: **TypeScript** (JSX, `moduleResolution: bundler`).
 - UI: **React 19**, **react-hook-form**, ícones **lucide-react**.
@@ -51,4 +51,4 @@
 - Endpoints externos: garantir CORS e HTTPS; não há reintentos ou toasts, só `alert`.
 - Mudanças no caminho de assets precisam alinhar `public/` e imports absolutos (`/images`, `/logo`).
 - Se usar GEMINI_API_KEY futuramente, centralizar em serviço em vez de ler diretamente no cliente.
-
+- Lockfile: removido porque a versão macOS não trazia binários Rollup para Linux e quebrava o build Nixpacks; gere novo `package-lock.json` em Linux x64 (Node >=20, npm >=10) antes de reintroduzir.
