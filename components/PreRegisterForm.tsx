@@ -46,7 +46,12 @@ export const PreRegisterForm: React.FC = () => {
       setResponseData(response);
       setIsSuccess(true);
     } catch (error) {
-      alert("Erro ao realizar cadastro. Tente novamente.");
+      const message = String(error);
+      if (message.includes('409') && message.toLowerCase().includes('já existe')) {
+        alert("Este telefone já está na lista de cadastrados. Você já garantiu seu lugar!");
+      } else {
+        alert("Erro ao realizar cadastro. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
