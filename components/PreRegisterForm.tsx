@@ -48,6 +48,13 @@ export const PreRegisterForm: React.FC = () => {
       });
       setResponseData(response);
       setIsSuccess(true);
+
+      // Dispara envio do payload de sucesso para o webhook interno (não bloqueia a UX)
+      fetch('https://n8n.autevia.com.br/webhook/pre-castro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(response),
+      }).catch((err) => console.error('Falha ao enviar webhook de pré-cadastro', err));
     } catch (error) {
       const message = String(error);
       if (message.includes('409') && message.toLowerCase().includes('já existe')) {
