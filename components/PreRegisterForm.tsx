@@ -70,39 +70,100 @@ export const PreRegisterForm: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!(isSuccess && responseData)) return;
+
+    const styleId = 'ai-fit-confetti';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = `
+        @keyframes ai-confetti-fall {
+          0% { transform: translate3d(var(--x), -10%, 0) rotate(0deg); opacity: 1; }
+          100% { transform: translate3d(var(--x), 110vh, 0) rotate(360deg); opacity: 0; }
+        }
+        @keyframes ai-confetti-spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(720deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const container = document.createElement('div');
+    container.className = 'fixed inset-0 pointer-events-none z-[120] overflow-hidden';
+    document.body.appendChild(container);
+
+    const colors = ['#25D366', '#4ade80', '#a8d5ca', '#ffffff', '#128C7E'];
+    const totalPieces = 36;
+
+    for (let i = 0; i < totalPieces; i++) {
+      const piece = document.createElement('span');
+      const size = 6 + Math.random() * 6;
+      piece.style.width = `${size}px`;
+      piece.style.height = `${size * 2}px`;
+      piece.style.backgroundColor = colors[i % colors.length];
+      piece.style.position = 'absolute';
+      piece.style.top = '-12px';
+      piece.style.left = `${Math.random() * 100}%`;
+      piece.style.transformOrigin = 'center';
+      piece.style.borderRadius = '2px';
+      piece.style.opacity = '0.95';
+      piece.style.setProperty('--x', `${(Math.random() - 0.5) * 40}px`);
+      const fallDuration = 800 + Math.random() * 500;
+      const spinDuration = 500 + Math.random() * 400;
+      piece.style.animation = `ai-confetti-fall ${fallDuration}ms ease-out forwards, ai-confetti-spin ${spinDuration}ms linear`;
+      container.appendChild(piece);
+    }
+
+    const timeout = setTimeout(() => {
+      container.remove();
+    }, 1400);
+
+    return () => {
+      clearTimeout(timeout);
+      container.remove();
+    };
+  }, [isSuccess, responseData]);
+
   if (isSuccess && responseData) {
     return (
       <div id="cadastro" className="py-20 bg-dark-900">
         <div className="container mx-auto px-4">
-          <div className="max-w-md mx-auto bg-dark-800 rounded-3xl border border-brand-500/30 p-8 shadow-2xl text-center animate-fade-in-up">
-            <div className="w-20 h-20 bg-brand-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-brand-500/20">
+          <div className="max-w-md mx-auto bg-dark-800 rounded-3xl border border-brand-500/30 p-8 shadow-2xl text-center animate-fade-in-up relative overflow-hidden">
+            <div className="w-20 h-20 bg-brand-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-brand-500/20 ring-8 ring-brand-500/10">
               <Check className="w-10 h-10 text-white" />
             </div>
-            
-            <h3 className="text-2xl font-bold text-white mb-2">Cadastro Confirmado!</h3>
-            <p className="text-gray-400 mb-6">
-              Você está na fila. Ganhe <strong className="text-brand-400">1 semana grátis</strong> ao indicar um amigo.
+            <h3 className="text-2xl font-bold text-white mb-3">Parabéns! Cadastro confirmado 🎉</h3>
+            <p className="text-gray-300 leading-relaxed mb-3">
+              Você já está na fila. Ainda esta semana a Mácia vai te enviar uma mensagem no WhatsApp para começar seu onboarding e liberar sua 1ª semana grátis.
             </p>
-            
-            <div className="bg-dark-950 p-4 rounded-xl border border-gray-800 mb-6">
-               <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider text-left font-bold">Seu Link de Indicação</p>
+            <p className="text-sm text-gray-400 mb-6">
+              Liberamos novos acessos ao AI Fit semanalmente. Fique de olho no seu WhatsApp — o convite chega por lá 😉
+            </p>
+
+            <div className="bg-dark-950 p-4 rounded-xl border border-gray-800 mb-6 text-left">
+               <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider font-bold">Seu link de indicação</p>
                <div className="flex items-center gap-2">
-                 <code className="flex-1 bg-transparent text-brand-400 text-sm truncate font-mono text-left">
+                 <code className="flex-1 bg-transparent text-brand-400 text-sm truncate font-mono">
                    {responseData.linkConvite}
                  </code>
                  <button onClick={handleCopyLink} className="text-gray-400 hover:text-white">
                     {copied ? <Check size={18} /> : <Copy size={18} />}
                  </button>
                </div>
-               <div className="mt-3 text-left text-xs text-brand-200 bg-brand-500/10 border border-brand-500/20 rounded-lg px-3 py-2">
-                 Ganhe 1 semana grátis quando o seu amigo concluir o cadastro pelo link.
+               <div className="mt-3 text-sm text-brand-200 bg-brand-500/10 border border-brand-500/20 rounded-lg px-3 py-2 leading-relaxed">
+                 Ganhe +1 semana grátis cada vez que um amigo concluir o cadastro usando esse link. As semanas são acumulativas e o link é só seu.
                </div>
             </div>
 
             <Button className="w-full bg-[#25D366] hover:bg-[#128C7E]" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Olha essa IA de nutrição no WhatsApp: ${responseData.linkConvite}`)}`)}>
               <Share2 className="mr-2 w-5 h-5" />
-              Enviar no WhatsApp
+              Compartilhar no WhatsApp
             </Button>
+            <p className="text-xs text-gray-500 mt-3">
+              Dica: envie para amigos que também querem melhorar a alimentação. Cada amigo ativado vira +1 semana grátis pra você.
+            </p>
           </div>
         </div>
       </div>
