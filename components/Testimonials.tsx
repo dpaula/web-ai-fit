@@ -125,7 +125,6 @@ export const Testimonials: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-white mb-4">O que dizem os usuários</h2>
-          <p className="text-gray-400">12 depoimentos reais com rostos sintéticos gerados por IA.</p>
           <div className="w-20 h-1 bg-brand-500 mx-auto rounded-full mt-4"></div>
         </div>
 
