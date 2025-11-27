@@ -6,6 +6,7 @@
 
 ## v1.0.7 — 2025-11-27
 - Normalização correta do telefone no POST de onboard (remove qualquer máscara antes de enviar).
+- Pills de status clicáveis para filtrar rapidamente; estado vazio mostra imagem de empty state.
 
 ## v1.0.5 — 2025-11-27
 - Cards mobile isolados do container principal (sem padding lateral extra), com moldura própria, gradiente e boxes internos para contato/acesso/indicação.

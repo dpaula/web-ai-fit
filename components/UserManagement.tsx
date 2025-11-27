@@ -272,18 +272,42 @@ export const UserManagement: React.FC = () => {
                       <span className="text-gray-500">Página {page + 1} de {totalPages}</span>
                     </div>
                     <div className="flex flex-wrap gap-2 text-[12px]">
-                      <span className="px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-100">
+                      <button
+                        className="px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-100 transition hover:border-amber-400 hover:text-amber-50"
+                        onClick={() => {
+                          setStatus('PRE_CADASTRO');
+                          setPage(0);
+                        }}
+                      >
                         Pré: {countsByStatus.PRE_CADASTRO}
-                      </span>
-                      <span className="px-3 py-1 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-100">
+                      </button>
+                      <button
+                        className="px-3 py-1 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-100 transition hover:border-blue-400 hover:text-blue-50"
+                        onClick={() => {
+                          setStatus('ON_BOARD');
+                          setPage(0);
+                        }}
+                      >
                         On board: {countsByStatus.ON_BOARD}
-                      </span>
-                      <span className="px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
+                      </button>
+                      <button
+                        className="px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-100 transition hover:border-emerald-400 hover:text-emerald-50"
+                        onClick={() => {
+                          setStatus('ATIVO');
+                          setPage(0);
+                        }}
+                      >
                         Ativos: {countsByStatus.ATIVO}
-                      </span>
-                      <span className="px-3 py-1 rounded-full border border-gray-500/40 bg-gray-500/10 text-gray-200">
+                      </button>
+                      <button
+                        className="px-3 py-1 rounded-full border border-gray-500/40 bg-gray-500/10 text-gray-200 transition hover:border-gray-300 hover:text-white"
+                        onClick={() => {
+                          setStatus('INATIVO');
+                          setPage(0);
+                        }}
+                      >
                         Inativos: {countsByStatus.INATIVO}
-                      </span>
+                      </button>
                     </div>
                   </div>
                 )}
@@ -557,8 +581,13 @@ export const UserManagement: React.FC = () => {
               </div>
 
               {emptyState && (
-                <div className="px-6 py-10 text-center text-gray-400">
-                  Nenhum usuário encontrado para os filtros informados.
+                <div className="px-6 py-10 text-center text-gray-400 space-y-3">
+                  <img
+                    src="/images/empty-state.png"
+                    alt="Nenhum usuário"
+                    className="mx-auto w-28 h-28 opacity-80"
+                  />
+                  <p>Nenhum usuário encontrado para o filtro selecionado.</p>
                 </div>
               )}
             </div>
