@@ -64,7 +64,7 @@ export const fetchUsuariosPaginado = async (
   return parseResponse<PaginaUsuarioDTO>(response);
 };
 
-const normalizePhone = (raw: string) => raw.replace(/\\D/g, '');
+const normalizePhone = (raw: string) => raw.replace(/\D/g, '');
 
 export const marcarOnBoard = async (telefone: string): Promise<UsuarioDTO> => {
   const normalized = normalizePhone(telefone.trim());
@@ -74,4 +74,36 @@ export const marcarOnBoard = async (telefone: string): Promise<UsuarioDTO> => {
   });
 
   return parseResponse<UsuarioDTO>(response);
+};
+
+export const ativarUsuario = async (telefone: string): Promise<UsuarioDTO> => {
+  const normalized = normalizePhone(telefone.trim());
+  const encodedPhone = encodeURIComponent(normalized);
+  const response = await fetch(`${USUARIOS_BASE}/${encodedPhone}/ativar`, {
+    method: 'POST',
+  });
+  return parseResponse<UsuarioDTO>(response);
+};
+
+export const desativarUsuario = async (telefone: string): Promise<UsuarioDTO> => {
+  const normalized = normalizePhone(telefone.trim());
+  const encodedPhone = encodeURIComponent(normalized);
+  const response = await fetch(`${USUARIOS_BASE}/${encodedPhone}/desativar`, {
+    method: 'POST',
+  });
+  return parseResponse<UsuarioDTO>(response);
+};
+
+export const excluirUsuario = async (telefone: string): Promise<void> => {
+  const normalized = normalizePhone(telefone.trim());
+  const encodedPhone = encodeURIComponent(normalized);
+  const response = await fetch(`${USUARIOS_BASE}/${encodedPhone}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    const err: ApiError = new Error(text || `Erro ${response.status}`);
+    err.status = response.status;
+    throw err;
+  }
 };

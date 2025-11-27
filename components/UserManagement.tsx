@@ -11,14 +11,23 @@ import {
   Phone,
   RefreshCcw,
   UserCircle2,
+  Trash2,
+  ShieldCheck,
+  ShieldOff,
 } from 'lucide-react';
 import { Button } from './Button';
-import { fetchUsuariosPaginado, marcarOnBoard } from '../services/api';
+import {
+  fetchUsuariosPaginado,
+  marcarOnBoard,
+  ativarUsuario,
+  desativarUsuario,
+  excluirUsuario,
+} from '../services/api';
 import { PaginaUsuarioDTO, UsuarioDTO, UsuarioStatus } from '../types';
 import { Logo } from './Logo';
 
 type SortField = 'nome' | 'dataPreCadastro' | 'dataFimAcesso';
-const APP_VERSION = 'v1.0.6';
+const APP_VERSION = 'v1.0.7';
 
 const statusColors: Record<UsuarioStatus, string> = {
   PRE_CADASTRO: 'bg-amber-500/15 text-amber-200 border-amber-500/40',
@@ -57,7 +66,12 @@ export const UserManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [onboardingPhone, setOnboardingPhone] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'onboard' | 'ativar' | 'desativar' | 'excluir';
+    user: UsuarioDTO;
+  } | null>(null);
 
   const dataFimParam = useMemo(
     () => (dataFim ? `${dataFim}T23:59:59Z` : undefined),
@@ -120,23 +134,66 @@ export const UserManagement: React.FC = () => {
     }, base as Record<UsuarioStatus, number>);
   }, [paginaUsuarios]);
 
-  const handleOnboard = async (telefone: string) => {
-    setOnboardingPhone(telefone);
+  const runAction = async (
+    type: 'onboard' | 'ativar' | 'desativar' | 'excluir',
+    user: UsuarioDTO
+  ) => {
+    setActionLoading(user.telefone);
     setError(null);
     setSuccessMessage(null);
     try {
-      const updated = await marcarOnBoard(telefone);
-      setPaginaUsuarios((prev) =>
-        prev
-          ? {
-              ...prev,
-              itens: prev.itens.map((item) =>
-                item.id === updated.id ? { ...item, ...updated } : item
-              ),
-            }
-          : prev
-      );
-      setSuccessMessage('Usuário marcado como ON BOARD');
+      if (type === 'onboard') {
+        const updated = await marcarOnBoard(user.telefone);
+        setPaginaUsuarios((prev) =>
+          prev
+            ? {
+                ...prev,
+                itens: prev.itens.map((item) =>
+                  item.id === updated.id ? { ...item, ...updated } : item
+                ),
+              }
+            : prev
+        );
+        setSuccessMessage('Usuário marcado como ON BOARD');
+      } else if (type === 'ativar') {
+        const updated = await ativarUsuario(user.telefone);
+        setPaginaUsuarios((prev) =>
+          prev
+            ? {
+                ...prev,
+                itens: prev.itens.map((item) =>
+                  item.id === updated.id ? { ...item, ...updated } : item
+                ),
+              }
+            : prev
+        );
+        setSuccessMessage('Usuário ativado');
+      } else if (type === 'desativar') {
+        const updated = await desativarUsuario(user.telefone);
+        setPaginaUsuarios((prev) =>
+          prev
+            ? {
+                ...prev,
+                itens: prev.itens.map((item) =>
+                  item.id === updated.id ? { ...item, ...updated } : item
+                ),
+              }
+            : prev
+        );
+        setSuccessMessage('Usuário desativado');
+      } else if (type === 'excluir') {
+        await excluirUsuario(user.telefone);
+        setPaginaUsuarios((prev) =>
+          prev
+            ? {
+                ...prev,
+                total: Math.max(0, prev.total - 1),
+                itens: prev.itens.filter((item) => item.id !== user.id),
+              }
+            : prev
+        );
+        setSuccessMessage('Usuário excluído');
+      }
     } catch (err) {
       const statusCode = (err as { status?: number })?.status;
       if (statusCode === 404) {
@@ -144,11 +201,13 @@ export const UserManagement: React.FC = () => {
       } else if (statusCode === 400) {
         setError('Telefone inválido. Envie no formato brasileiro.');
       } else {
-        const message = err instanceof Error ? err.message : 'Erro ao marcar como ON BOARD.';
+        const message = err instanceof Error ? err.message : 'Erro ao executar ação.';
         setError(message);
       }
     } finally {
+      setActionLoading(null);
       setOnboardingPhone(null);
+      setConfirmAction(null);
     }
   };
 
@@ -399,7 +458,9 @@ export const UserManagement: React.FC = () => {
                   </thead>
                   <tbody>
                     {paginaUsuarios?.itens?.map((user: UsuarioDTO) => {
-                      const canOnboard = user.status === 'PRE_CADASTRO';
+                      const canOnboard = user.status !== 'ON_BOARD';
+                      const canAtivar = user.status !== 'ATIVO';
+                      const canDesativar = user.status !== 'INATIVO';
                       return (
                         <tr
                           key={user.id}
@@ -449,15 +510,44 @@ export const UserManagement: React.FC = () => {
                             {user.indicadoPorCodigo || '—'}
                           </td>
                           <td className="px-4 py-3">
-                            <Button
-                              variant="primary"
-                              className="h-9 text-xs px-4"
-                              disabled={!canOnboard || onboardingPhone === user.telefone}
-                              isLoading={onboardingPhone === user.telefone}
-                              onClick={() => handleOnboard(user.telefone)}
-                            >
-                              Marcar ON BOARD
-                            </Button>
+                            <div className="flex flex-wrap gap-2">
+                              <Button
+                                variant="primary"
+                                className="h-9 text-xs px-3"
+                                disabled={!canOnboard || actionLoading === user.telefone}
+                                isLoading={actionLoading === user.telefone && confirmAction?.type === 'onboard'}
+                                onClick={() => setConfirmAction({ type: 'onboard', user })}
+                              >
+                                On board
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="h-9 text-xs px-3"
+                                disabled={!canAtivar || actionLoading === user.telefone}
+                                isLoading={actionLoading === user.telefone && confirmAction?.type === 'ativar'}
+                                onClick={() => setConfirmAction({ type: 'ativar', user })}
+                              >
+                                Ativar
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="h-9 text-xs px-3"
+                                disabled={!canDesativar || actionLoading === user.telefone}
+                                isLoading={actionLoading === user.telefone && confirmAction?.type === 'desativar'}
+                                onClick={() => setConfirmAction({ type: 'desativar', user })}
+                              >
+                                Desativar
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="h-9 text-xs px-3 text-red-300 border-red-400/50 hover:border-red-300"
+                                disabled={actionLoading === user.telefone}
+                                isLoading={actionLoading === user.telefone && confirmAction?.type === 'excluir'}
+                                onClick={() => setConfirmAction({ type: 'excluir', user })}
+                              >
+                                Excluir
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -513,7 +603,9 @@ export const UserManagement: React.FC = () => {
           {/* Mobile cards out of the section */}
           <div className="md:hidden space-y-5">
             {paginaUsuarios?.itens?.map((user: UsuarioDTO) => {
-              const canOnboard = user.status === 'PRE_CADASTRO';
+              const canOnboard = user.status !== 'ON_BOARD';
+              const canAtivar = user.status !== 'ATIVO';
+              const canDesativar = user.status !== 'INATIVO';
               return (
                 <div
                   key={user.id}
@@ -580,15 +672,44 @@ export const UserManagement: React.FC = () => {
                   </div>
 
                   <div>
-                    <Button
-                      variant="primary"
-                      className="w-full h-11 text-sm"
-                      disabled={!canOnboard || onboardingPhone === user.telefone}
-                      isLoading={onboardingPhone === user.telefone}
-                      onClick={() => handleOnboard(user.telefone)}
-                    >
-                      Marcar ON BOARD
-                    </Button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="primary"
+                        className="h-11 text-sm"
+                        disabled={!canOnboard || actionLoading === user.telefone}
+                        isLoading={actionLoading === user.telefone && confirmAction?.type === 'onboard'}
+                        onClick={() => setConfirmAction({ type: 'onboard', user })}
+                      >
+                        On board
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-11 text-sm"
+                        disabled={!canAtivar || actionLoading === user.telefone}
+                        isLoading={actionLoading === user.telefone && confirmAction?.type === 'ativar'}
+                        onClick={() => setConfirmAction({ type: 'ativar', user })}
+                      >
+                        Ativar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-11 text-sm"
+                        disabled={!canDesativar || actionLoading === user.telefone}
+                        isLoading={actionLoading === user.telefone && confirmAction?.type === 'desativar'}
+                        onClick={() => setConfirmAction({ type: 'desativar', user })}
+                      >
+                        Desativar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-11 text-sm text-red-300 border-red-400/50 hover:border-red-300"
+                        disabled={actionLoading === user.telefone}
+                        isLoading={actionLoading === user.telefone && confirmAction?.type === 'excluir'}
+                        onClick={() => setConfirmAction({ type: 'excluir', user })}
+                      >
+                        Excluir
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
@@ -596,6 +717,37 @@ export const UserManagement: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {confirmAction && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+          <div className="bg-dark-900 border border-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+            <h3 className="text-xl font-semibold text-white text-center">Confirmar ação</h3>
+            <p className="text-gray-300 text-center">
+              Deseja confirmar <span className="font-semibold text-brand-200">{confirmAction.type}</span> para
+              <br />
+              <span className="text-white font-semibold">{confirmAction.user.nome}</span> ({confirmAction.user.telefone})?
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 h-11"
+                onClick={() => setConfirmAction(null)}
+                disabled={actionLoading === confirmAction.user.telefone}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                className="flex-1 h-11"
+                isLoading={actionLoading === confirmAction.user.telefone}
+                onClick={() => runAction(confirmAction.type, confirmAction.user)}
+              >
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
