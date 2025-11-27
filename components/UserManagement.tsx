@@ -18,7 +18,7 @@ import { PaginaUsuarioDTO, UsuarioDTO, UsuarioStatus } from '../types';
 import { Logo } from './Logo';
 
 type SortField = 'nome' | 'dataPreCadastro' | 'dataFimAcesso';
-const APP_VERSION = 'v1.0.2';
+const APP_VERSION = 'v1.0.3';
 
 const statusColors: Record<UsuarioStatus, string> = {
   PRE_CADASTRO: 'bg-amber-500/15 text-amber-200 border-amber-500/40',
@@ -359,13 +359,13 @@ export const UserManagement: React.FC = () => {
               )}
 
               {/* Mobile-first cards */}
-              <div className="space-y-3 p-4 md:hidden">
+              <div className="space-y-4 p-4 md:hidden">
                 {paginaUsuarios?.itens?.map((user: UsuarioDTO) => {
                   const canOnboard = user.status === 'PRE_CADASTRO';
                   return (
                     <div
                       key={user.id}
-                      className="rounded-2xl border border-gray-800 bg-dark-800/70 p-4 shadow-lg shadow-black/20"
+                      className="rounded-2xl border border-gray-800 bg-dark-800/80 p-4 shadow-lg shadow-black/20 space-y-3"
                     >
                       <div className="flex items-start gap-3">
                         {user.urlAvatar ? (
@@ -379,39 +379,39 @@ export const UserManagement: React.FC = () => {
                             {initialsFromName(user.nome)}
                           </div>
                         )}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="font-semibold text-white leading-tight break-words">
-                                {user.nome}
-                              </p>
-                              <p className="text-[11px] text-gray-500 break-words">
-                                {user.codigoConvite || '—'}
-                              </p>
-                            </div>
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-semibold text-white leading-tight break-words text-base">
+                              {user.nome}
+                            </p>
                             <span
                               className={`px-3 py-1 rounded-full border text-[11px] font-semibold whitespace-nowrap ${statusColors[user.status]}`}
                             >
                               {user.status}
                             </span>
                           </div>
+                          <p className="text-[11px] text-gray-500 break-all">
+                            {user.codigoConvite || '—'}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="mt-3 space-y-2 text-sm text-gray-200">
-                        <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                          <span className="text-[13px] leading-snug break-words">{user.telefone}</span>
+                      <div className="space-y-2 text-sm text-gray-200">
+                        <div className="flex items-start gap-2">
+                          <Phone className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-[13px] leading-snug whitespace-pre-line break-words">
+                            {user.telefone}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                          <span className="text-[13px] leading-snug break-words">
+                        <div className="flex items-start gap-2">
+                          <Mail className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-[13px] leading-snug break-all">
                             {user.email ?? '—'}
                           </span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-[12px] text-gray-400">
-                          <span>Pré-cad.: {formatDateTime(user.dataPreCadastro)}</span>
-                          <span>Fim: {formatDateTime(user.dataFimAcesso)}</span>
+                          <span className="break-words">Pré-cad.: {formatDateTime(user.dataPreCadastro)}</span>
+                          <span className="break-words">Fim: {formatDateTime(user.dataFimAcesso)}</span>
                         </div>
                         <div className="text-[12px] text-gray-400 break-words">
                           Indicado por: {user.indicadoPorCodigo || '—'}
