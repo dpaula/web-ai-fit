@@ -64,8 +64,11 @@ export const fetchUsuariosPaginado = async (
   return parseResponse<PaginaUsuarioDTO>(response);
 };
 
+const normalizePhone = (raw: string) => raw.replace(/\\D/g, '');
+
 export const marcarOnBoard = async (telefone: string): Promise<UsuarioDTO> => {
-  const encodedPhone = encodeURIComponent(telefone.trim());
+  const normalized = normalizePhone(telefone.trim());
+  const encodedPhone = encodeURIComponent(normalized);
   const response = await fetch(`${USUARIOS_BASE}/${encodedPhone}/onboard`, {
     method: 'POST',
   });
