@@ -7,11 +7,19 @@ import { PreRegisterForm } from './components/PreRegisterForm';
 import { Footer } from './components/Footer';
 import { Logo } from './components/Logo';
 import { Button } from './components/Button';
+import { UserManagement } from './components/UserManagement';
 
 function App() {
   const scrollToForm = () => {
     document.getElementById('cadastro')?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const isManagementRoute =
+    typeof window !== 'undefined' && window.location.pathname.includes('gerenciar-usuarios');
+
+  if (isManagementRoute) {
+    return <UserManagement />;
+  }
 
   return (
     <div className="min-h-screen bg-dark-950 text-gray-100 font-sans selection:bg-brand-500 selection:text-white">
