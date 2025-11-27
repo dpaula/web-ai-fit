@@ -54,7 +54,7 @@ const initialsFromName = (name: string) =>
     .join('');
 
 export const UserManagement: React.FC = () => {
-  const [status, setStatus] = useState<UsuarioStatus | ''>('PRE_CADASTRO');
+  const [status, setStatus] = useState<UsuarioStatus | ''>('');
   const [dataFim, setDataFim] = useState('');
   const [ordenarPor, setOrdenarPor] = useState<SortField>('dataPreCadastro');
   const [direcao, setDirecao] = useState<'asc' | 'desc'>('desc');
