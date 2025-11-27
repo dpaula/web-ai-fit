@@ -18,7 +18,7 @@ import { PaginaUsuarioDTO, UsuarioDTO, UsuarioStatus } from '../types';
 import { Logo } from './Logo';
 
 type SortField = 'nome' | 'dataPreCadastro' | 'dataFimAcesso';
-const APP_VERSION = 'v1.0.3';
+const APP_VERSION = 'v1.0.6';
 
 const statusColors: Record<UsuarioStatus, string> = {
   PRE_CADASTRO: 'bg-amber-500/15 text-amber-200 border-amber-500/40',
@@ -111,6 +111,15 @@ export const UserManagement: React.FC = () => {
       ? Math.min(paginaUsuarios.total, (page + 1) * paginaUsuarios.tamanho)
       : 0;
 
+  const countsByStatus = useMemo(() => {
+    const base = { PRE_CADASTRO: 0, ON_BOARD: 0, ATIVO: 0, INATIVO: 0 };
+    if (!paginaUsuarios?.itens) return base;
+    return paginaUsuarios.itens.reduce((acc, user) => {
+      if (acc[user.status] !== undefined) acc[user.status] += 1;
+      return acc;
+    }, base as Record<UsuarioStatus, number>);
+  }, [paginaUsuarios]);
+
   const handleOnboard = async (telefone: string) => {
     setOnboardingPhone(telefone);
     setError(null);
@@ -187,21 +196,36 @@ export const UserManagement: React.FC = () => {
         <div className="container mx-auto px-4 space-y-8">
           <section className="bg-dark-900/70 border border-gray-800 rounded-3xl p-6 shadow-2xl shadow-black/30">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-2xl font-bold text-white">Gerenciar usuários</h1>
-                <p className="text-sm text-gray-500">Liste, filtre e marque pré-cadastros como ON BOARD.</p>
+              <div className="w-full text-center md:text-left">
+                <h1 className="text-2xl font-bold text-white">Usuários</h1>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-start gap-3 md:items-end">
                 {paginaUsuarios && (
-                  <div className="bg-dark-800/70 border border-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-200 shadow-lg flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <UserCircle2 className="w-5 h-5 text-brand-400" />
-                      <span className="font-semibold">
-                        {paginaUsuarios.total.toLocaleString('pt-BR')} usuários
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="bg-dark-800/70 border border-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-200 shadow-lg flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <UserCircle2 className="w-5 h-5 text-brand-400" />
+                        <span className="font-semibold">
+                          {paginaUsuarios.total.toLocaleString('pt-BR')} usuários
+                        </span>
+                      </div>
+                      <span className="hidden md:inline text-gray-500">•</span>
+                      <span className="text-gray-500">Página {page + 1} de {totalPages}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-[12px]">
+                      <span className="px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-100">
+                        Pré: {countsByStatus.PRE_CADASTRO}
+                      </span>
+                      <span className="px-3 py-1 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-100">
+                        On board: {countsByStatus.ON_BOARD}
+                      </span>
+                      <span className="px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
+                        Ativos: {countsByStatus.ATIVO}
+                      </span>
+                      <span className="px-3 py-1 rounded-full border border-gray-500/40 bg-gray-500/10 text-gray-200">
+                        Inativos: {countsByStatus.INATIVO}
                       </span>
                     </div>
-                    <span className="hidden md:inline text-gray-500">•</span>
-                    <span className="text-gray-500">Página {page + 1} de {totalPages}</span>
                   </div>
                 )}
                 <span className="md:hidden text-[11px] text-gray-500 border border-gray-800 rounded-full px-2 py-1">
@@ -348,7 +372,7 @@ export const UserManagement: React.FC = () => {
               </div>
             )}
 
-            <div className="relative overflow-hidden border border-gray-800 rounded-2xl bg-dark-900/70">
+            <div className="relative overflow-hidden rounded-2xl bg-transparent md:bg-dark-900/40 md:border md:border-gray-800 md:p-4">
               {loading && (
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-10">
                   <div className="flex items-center gap-2 text-gray-200">
@@ -357,82 +381,6 @@ export const UserManagement: React.FC = () => {
                   </div>
                 </div>
               )}
-
-              {/* Mobile-first cards */}
-              <div className="space-y-4 p-4 md:hidden">
-                {paginaUsuarios?.itens?.map((user: UsuarioDTO) => {
-                  const canOnboard = user.status === 'PRE_CADASTRO';
-                  return (
-                    <div
-                      key={user.id}
-                      className="rounded-2xl border border-gray-800 bg-dark-800/80 p-4 shadow-lg shadow-black/20 space-y-3"
-                    >
-                      <div className="flex items-start gap-3">
-                        {user.urlAvatar ? (
-                          <img
-                            src={user.urlAvatar}
-                            alt={user.nome}
-                            className="w-11 h-11 rounded-full object-cover border border-gray-800 flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-11 h-11 rounded-full bg-brand-500/20 text-brand-200 border border-brand-500/40 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                            {initialsFromName(user.nome)}
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-semibold text-white leading-tight break-words text-base">
-                              {user.nome}
-                            </p>
-                            <span
-                              className={`px-3 py-1 rounded-full border text-[11px] font-semibold whitespace-nowrap ${statusColors[user.status]}`}
-                            >
-                              {user.status}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-gray-500 break-all">
-                            {user.codigoConvite || '—'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 text-sm text-gray-200">
-                        <div className="flex items-start gap-2">
-                          <Phone className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-[13px] leading-snug whitespace-pre-line break-words">
-                            {user.telefone}
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Mail className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-[13px] leading-snug break-all">
-                            {user.email ?? '—'}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-[12px] text-gray-400">
-                          <span className="break-words">Pré-cad.: {formatDateTime(user.dataPreCadastro)}</span>
-                          <span className="break-words">Fim: {formatDateTime(user.dataFimAcesso)}</span>
-                        </div>
-                        <div className="text-[12px] text-gray-400 break-words">
-                          Indicado por: {user.indicadoPorCodigo || '—'}
-                        </div>
-                      </div>
-
-                      <div className="mt-4">
-                        <Button
-                          variant="primary"
-                          className="w-full h-10 text-sm"
-                          disabled={!canOnboard || onboardingPhone === user.telefone}
-                          isLoading={onboardingPhone === user.telefone}
-                          onClick={() => handleOnboard(user.telefone)}
-                        >
-                          Marcar ON BOARD
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
 
               {/* Desktop table */}
               <div className="overflow-x-auto hidden md:block">
@@ -561,6 +509,91 @@ export const UserManagement: React.FC = () => {
               </div>
             </div>
           </section>
+
+          {/* Mobile cards out of the section */}
+          <div className="md:hidden space-y-5">
+            {paginaUsuarios?.itens?.map((user: UsuarioDTO) => {
+              const canOnboard = user.status === 'PRE_CADASTRO';
+              return (
+                <div
+                  key={user.id}
+                  className="rounded-3xl border border-gray-800/80 bg-gradient-to-br from-dark-900/95 via-dark-800/90 to-dark-900/95 p-5 shadow-xl shadow-black/25 ring-1 ring-brand-500/10 space-y-4"
+                >
+                  <div className="flex items-start gap-3">
+                    {user.urlAvatar ? (
+                      <img
+                        src={user.urlAvatar}
+                        alt={user.nome}
+                        className="w-12 h-12 rounded-full object-cover border border-gray-800 flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-brand-500/20 text-brand-200 border border-brand-500/40 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {initialsFromName(user.nome)}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-semibold text-white leading-tight break-words text-base">
+                          {user.nome}
+                        </p>
+                        <span
+                          className={`px-3 py-1 rounded-full border text-[11px] font-semibold whitespace-nowrap ${statusColors[user.status]}`}
+                        >
+                          {user.status}
+                        </span>
+                      </div>
+                      {user.codigoConvite && (
+                        <p className="text-[11px] text-gray-500 break-all">
+                          {user.codigoConvite}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-sm text-gray-200">
+                    <div className="bg-dark-900/60 rounded-2xl p-3 border border-gray-800/70 space-y-2">
+                      <div className="flex items-start gap-2">
+                        <Phone className="w-4 h-4 text-gray-500 mt-0.5" />
+                        <span className="text-[13px] leading-snug break-words">{user.telefone}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Mail className="w-4 h-4 text-gray-500 mt-0.5" />
+                        <span className="text-[13px] leading-snug break-all">{user.email ?? '—'}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-dark-900/60 rounded-2xl p-3 border border-gray-800/70 space-y-1 text-[12px] text-gray-300">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">Pré:</span>
+                        <span className="text-right break-words">{formatDateTime(user.dataPreCadastro)}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">Fim:</span>
+                        <span className="text-right break-words">{formatDateTime(user.dataFimAcesso)}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-dark-900/60 rounded-2xl p-3 border border-gray-800/70 text-[12px] text-gray-300">
+                      <div className="text-gray-400 mb-1">Indicado por</div>
+                      <div className="break-words">{user.indicadoPorCodigo || '—'}</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Button
+                      variant="primary"
+                      className="w-full h-11 text-sm"
+                      disabled={!canOnboard || onboardingPhone === user.telefone}
+                      isLoading={onboardingPhone === user.telefone}
+                      onClick={() => handleOnboard(user.telefone)}
+                    >
+                      Marcar ON BOARD
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </main>
     </div>
