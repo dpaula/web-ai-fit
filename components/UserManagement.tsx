@@ -10,7 +10,6 @@ import {
   Mail,
   Phone,
   RefreshCcw,
-  Sparkles,
   UserCircle2,
 } from 'lucide-react';
 import { Button } from './Button';
@@ -58,6 +57,7 @@ export const UserManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [onboardingPhone, setOnboardingPhone] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const dataFimParam = useMemo(
     () => (dataFim ? `${dataFim}T23:59:59Z` : undefined),
@@ -163,20 +163,13 @@ export const UserManagement: React.FC = () => {
             <Logo />
             <div className="hidden sm:flex flex-col leading-tight">
               <span className="text-sm text-gray-400">Painel interno</span>
-              <span className="text-base font-semibold text-white">Gerenciar Usuários</span>
+              <span className="text-base font-semibold text-white">Gerenciar usuários</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-[11px] text-gray-500 border border-gray-800 rounded-full px-2 py-1 hidden sm:inline-flex">
               {APP_VERSION}
             </span>
-            <Button
-              variant="outline"
-              className="h-10 px-4 text-sm"
-              onClick={() => (window.location.href = '/')}
-            >
-              Voltar para landing
-            </Button>
             <Button
               variant="primary"
               className="h-10 px-4 text-sm"
@@ -193,35 +186,46 @@ export const UserManagement: React.FC = () => {
       <main className="pt-28 pb-16">
         <div className="container mx-auto px-4 space-y-8">
           <section className="bg-dark-900/70 border border-gray-800 rounded-3xl p-6 shadow-2xl shadow-black/30">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
               <div>
-                <p className="text-sm text-gray-400 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-brand-400" />
-                  Foco em novos usuários (status PRE_CADASTRO)
-                </p>
-                <h1 className="text-2xl font-bold text-white mt-1">Gerenciar usuários</h1>
-                <p className="text-sm text-gray-500">
-                  Liste, filtre e marque pré-cadastros como ON BOARD.
-                </p>
+                <h1 className="text-2xl font-bold text-white">Gerenciar usuários</h1>
+                <p className="text-sm text-gray-500">Liste, filtre e marque pré-cadastros como ON BOARD.</p>
               </div>
-              {paginaUsuarios && (
-                <div className="bg-dark-800/70 border border-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-200 shadow-lg flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <UserCircle2 className="w-5 h-5 text-brand-400" />
-                    <span className="font-semibold">
-                      {paginaUsuarios.total.toLocaleString('pt-BR')} usuários
-                    </span>
+              <div className="flex items-center gap-3">
+                {paginaUsuarios && (
+                  <div className="bg-dark-800/70 border border-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-200 shadow-lg flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <UserCircle2 className="w-5 h-5 text-brand-400" />
+                      <span className="font-semibold">
+                        {paginaUsuarios.total.toLocaleString('pt-BR')} usuários
+                      </span>
+                    </div>
+                    <span className="hidden md:inline text-gray-500">•</span>
+                    <span className="text-gray-500">Página {page + 1} de {totalPages}</span>
                   </div>
-                  <span className="hidden md:inline text-gray-500">•</span>
-                  <span className="text-gray-500">Página {page + 1} de {totalPages}</span>
-                  <span className="md:hidden text-[11px] text-gray-500 border border-gray-800 rounded-full px-2 py-1">
-                    {APP_VERSION}
-                  </span>
-                </div>
-              )}
+                )}
+                <span className="md:hidden text-[11px] text-gray-500 border border-gray-800 rounded-full px-2 py-1">
+                  {APP_VERSION}
+                </span>
+              </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-12 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <Button
+                variant="outline"
+                className="h-10 px-4 text-sm"
+                onClick={() => setShowFilters((prev) => !prev)}
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
+              </Button>
+              <p className="text-xs text-gray-500 hidden md:block">
+                Status padrão: PRE_CADASTRO • Ordenação: Data pré-cadastro desc
+              </p>
+            </div>
+
+            {showFilters && (
+              <div className="grid gap-4 md:grid-cols-12 mb-4">
               <div className="md:col-span-3">
                 <label className="flex items-center gap-2 text-sm text-gray-400 mb-1">
                   <Filter className="w-4 h-4" />
@@ -258,9 +262,6 @@ export const UserManagement: React.FC = () => {
                   className="w-full bg-dark-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent placeholder:text-gray-600"
                   placeholder="yyyy-mm-dd"
                 />
-                <p className="text-[11px] text-gray-500 mt-1">
-                  Será enviado como {dataFim ? `${dataFim}T23:59:59Z` : '—'}
-                </p>
               </div>
 
               <div className="md:col-span-3">
@@ -332,6 +333,7 @@ export const UserManagement: React.FC = () => {
                 </Button>
               </div>
             </div>
+            )}
 
             {error && (
               <div className="mb-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
