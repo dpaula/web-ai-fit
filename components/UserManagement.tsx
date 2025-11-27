@@ -18,7 +18,7 @@ import { PaginaUsuarioDTO, UsuarioDTO, UsuarioStatus } from '../types';
 import { Logo } from './Logo';
 
 type SortField = 'nome' | 'dataPreCadastro' | 'dataFimAcesso';
-const APP_VERSION = 'v1.0.0';
+const APP_VERSION = 'v1.0.2';
 
 const statusColors: Record<UsuarioStatus, string> = {
   PRE_CADASTRO: 'bg-amber-500/15 text-amber-200 border-amber-500/40',
@@ -365,47 +365,55 @@ export const UserManagement: React.FC = () => {
                   return (
                     <div
                       key={user.id}
-                      className="rounded-2xl border border-gray-800 bg-dark-800/60 p-4 shadow-sm"
+                      className="rounded-2xl border border-gray-800 bg-dark-800/70 p-4 shadow-lg shadow-black/20"
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          {user.urlAvatar ? (
-                            <img
-                              src={user.urlAvatar}
-                              alt={user.nome}
-                              className="w-11 h-11 rounded-full object-cover border border-gray-800"
-                            />
-                          ) : (
-                            <div className="w-11 h-11 rounded-full bg-brand-500/20 text-brand-200 border border-brand-500/40 flex items-center justify-center text-sm font-bold">
-                              {initialsFromName(user.nome)}
+                      <div className="flex items-start gap-3">
+                        {user.urlAvatar ? (
+                          <img
+                            src={user.urlAvatar}
+                            alt={user.nome}
+                            className="w-11 h-11 rounded-full object-cover border border-gray-800 flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-11 h-11 rounded-full bg-brand-500/20 text-brand-200 border border-brand-500/40 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                            {initialsFromName(user.nome)}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="font-semibold text-white leading-tight break-words">
+                                {user.nome}
+                              </p>
+                              <p className="text-[11px] text-gray-500 break-words">
+                                {user.codigoConvite || '—'}
+                              </p>
                             </div>
-                          )}
-                          <div>
-                            <p className="font-semibold text-white leading-tight">{user.nome}</p>
-                            <p className="text-xs text-gray-500">{user.codigoConvite || '—'}</p>
+                            <span
+                              className={`px-3 py-1 rounded-full border text-[11px] font-semibold whitespace-nowrap ${statusColors[user.status]}`}
+                            >
+                              {user.status}
+                            </span>
                           </div>
                         </div>
-                        <span
-                          className={`px-3 py-1 rounded-full border text-[11px] font-semibold whitespace-nowrap ${statusColors[user.status]}`}
-                        >
-                          {user.status}
-                        </span>
                       </div>
 
                       <div className="mt-3 space-y-2 text-sm text-gray-200">
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-gray-500" />
-                          <span className="font-mono text-xs">{user.telefone}</span>
+                          <Phone className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                          <span className="text-[13px] leading-snug break-words">{user.telefone}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-gray-500" />
-                          <span className="truncate">{user.email ?? '—'}</span>
+                          <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                          <span className="text-[13px] leading-snug break-words">
+                            {user.email ?? '—'}
+                          </span>
                         </div>
-                        <div className="flex justify-between text-xs text-gray-400">
+                        <div className="grid grid-cols-2 gap-2 text-[12px] text-gray-400">
                           <span>Pré-cad.: {formatDateTime(user.dataPreCadastro)}</span>
                           <span>Fim: {formatDateTime(user.dataFimAcesso)}</span>
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-[12px] text-gray-400 break-words">
                           Indicado por: {user.indicadoPorCodigo || '—'}
                         </div>
                       </div>
