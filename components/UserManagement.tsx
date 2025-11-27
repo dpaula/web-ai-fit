@@ -62,6 +62,7 @@ export const UserManagement: React.FC = () => {
   const [page, setPage] = useState(0);
 
   const [paginaUsuarios, setPaginaUsuarios] = useState<PaginaUsuarioDTO | null>(null);
+  const [initialTotal, setInitialTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -72,6 +73,7 @@ export const UserManagement: React.FC = () => {
     type: 'onboard' | 'ativar' | 'desativar' | 'excluir';
     user: UsuarioDTO;
   } | null>(null);
+  const [initialCounts, setInitialCounts] = useState<Record<UsuarioStatus, number> | null>(null);
 
   const dataFimParam = useMemo(
     () => (dataFim ? `${dataFim}T23:59:59Z` : undefined),
@@ -91,6 +93,17 @@ export const UserManagement: React.FC = () => {
         direcao,
       });
       setPaginaUsuarios(response);
+      if (initialTotal === null) {
+        setInitialTotal(response.total);
+      }
+      if (!initialCounts) {
+        const base = { PRE_CADASTRO: 0, ON_BOARD: 0, ATIVO: 0, INATIVO: 0 };
+        const counts = response.itens.reduce((acc, user) => {
+          if (acc[user.status] !== undefined) acc[user.status] += 1;
+          return acc;
+        }, base as Record<UsuarioStatus, number>);
+        setInitialCounts(counts);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao carregar usuários';
       setError(message || 'Erro ao carregar usuários. Tente novamente.');
@@ -126,13 +139,14 @@ export const UserManagement: React.FC = () => {
       : 0;
 
   const countsByStatus = useMemo(() => {
+    if (initialCounts) return initialCounts;
     const base = { PRE_CADASTRO: 0, ON_BOARD: 0, ATIVO: 0, INATIVO: 0 };
     if (!paginaUsuarios?.itens) return base;
     return paginaUsuarios.itens.reduce((acc, user) => {
       if (acc[user.status] !== undefined) acc[user.status] += 1;
       return acc;
     }, base as Record<UsuarioStatus, number>);
-  }, [paginaUsuarios]);
+  }, [paginaUsuarios, initialCounts]);
 
   const runAction = async (
     type: 'onboard' | 'ativar' | 'desativar' | 'excluir',
@@ -241,7 +255,13 @@ export const UserManagement: React.FC = () => {
             <Button
               variant="primary"
               className="h-10 px-4 text-sm"
-              onClick={loadUsers}
+              onClick={() => {
+                setStatus('');
+                setPage(0);
+                setInitialCounts(null);
+                setInitialTotal(null);
+                loadUsers();
+              }}
               isLoading={loading}
             >
               <RefreshCcw className="w-4 h-4 mr-2" />
@@ -265,7 +285,7 @@ export const UserManagement: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <UserCircle2 className="w-5 h-5 text-brand-400" />
                         <span className="font-semibold">
-                          {paginaUsuarios.total.toLocaleString('pt-BR')} usuários
+                          {(initialTotal ?? paginaUsuarios.total).toLocaleString('pt-BR')} usuários
                         </span>
                       </div>
                       <span className="hidden md:inline text-gray-500">•</span>
@@ -583,9 +603,10 @@ export const UserManagement: React.FC = () => {
               {emptyState && (
                 <div className="px-6 py-10 text-center text-gray-400 space-y-3">
                   <img
-                    src="/images/empty-state.png"
+                    src="/images/empty-users.svg"
                     alt="Nenhum usuário"
                     className="mx-auto w-28 h-28 opacity-80"
+                    loading="lazy"
                   />
                   <p>Nenhum usuário encontrado para o filtro selecionado.</p>
                 </div>
