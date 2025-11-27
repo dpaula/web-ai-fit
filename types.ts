@@ -35,6 +35,29 @@ export interface TestimonialItem {
 
 export type UsuarioStatus = 'PRE_CADASTRO' | 'ON_BOARD' | 'ATIVO' | 'INATIVO';
 
+export type HistoricoEvento =
+  | 'PESO_REGISTRADO'
+  | 'PESO_ATUALIZADO'
+  | 'PESO_REMOVIDO'
+  | 'REFEICAO_CRIADA'
+  | 'REFEICAO_REMOVIDA'
+  | 'META_CRIADA'
+  | 'META_ATUALIZADA'
+  | 'META_REMOVIDA'
+  | 'PERFIL_CRIADO'
+  | 'CRIACAO'
+  | 'ONBOARD_INICIADO'
+  | 'ATIVACAO_ACESSO'
+  | 'DESATIVACAO_ACESSO';
+
+export interface HistoricoUsuarioDTO {
+  id: string;
+  evento: HistoricoEvento;
+  descricao: string;
+  detalhes?: string | null;
+  dataEvento: string;
+}
+
 export interface UsuarioDTO {
   id: string;
   telefone: string;
@@ -51,6 +74,7 @@ export interface UsuarioDTO {
   totalIndicacoes?: number;
   semanasBonusRecebidas?: number;
   dataPreCadastro?: string | null;
+  historico?: HistoricoUsuarioDTO[];
 }
 
 export interface PaginaUsuarioDTO {

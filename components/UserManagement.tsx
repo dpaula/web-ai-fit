@@ -10,6 +10,7 @@ import {
   Mail,
   Phone,
   RefreshCcw,
+  ListOrdered,
   UserCircle2,
   Trash2,
   ShieldCheck,
@@ -23,7 +24,7 @@ import {
   desativarUsuario,
   excluirUsuario,
 } from '../services/api';
-import { PaginaUsuarioDTO, UsuarioDTO, UsuarioStatus } from '../types';
+import { PaginaUsuarioDTO, UsuarioDTO, UsuarioStatus, HistoricoUsuarioDTO } from '../types';
 import { Logo } from './Logo';
 
 type SortField = 'nome' | 'dataPreCadastro' | 'dataFimAcesso';
@@ -36,6 +37,22 @@ const statusColors: Record<UsuarioStatus, string> = {
   INATIVO: 'bg-gray-500/15 text-gray-300 border-gray-500/40',
 };
 
+const eventoColors: Record<string, string> = {
+  PESO_REGISTRADO: 'bg-emerald-500/15 text-emerald-200 border-emerald-500/40',
+  PESO_ATUALIZADO: 'bg-emerald-500/15 text-emerald-200 border-emerald-500/40',
+  PESO_REMOVIDO: 'bg-emerald-500/15 text-emerald-200 border-emerald-500/40',
+  REFEICAO_CRIADA: 'bg-amber-500/15 text-amber-200 border-amber-500/40',
+  REFEICAO_REMOVIDA: 'bg-amber-500/15 text-amber-200 border-amber-500/40',
+  META_CRIADA: 'bg-blue-500/15 text-blue-200 border-blue-500/40',
+  META_ATUALIZADA: 'bg-blue-500/15 text-blue-200 border-blue-500/40',
+  META_REMOVIDA: 'bg-blue-500/15 text-blue-200 border-blue-500/40',
+  PERFIL_CRIADO: 'bg-slate-500/15 text-slate-200 border-slate-500/40',
+  CRIACAO: 'bg-slate-500/15 text-slate-200 border-slate-500/40',
+  ONBOARD_INICIADO: 'bg-indigo-500/15 text-indigo-200 border-indigo-500/40',
+  ATIVACAO_ACESSO: 'bg-emerald-500/15 text-emerald-200 border-emerald-500/40',
+  DESATIVACAO_ACESSO: 'bg-red-500/15 text-red-200 border-red-500/40',
+};
+
 const formatDateTime = (value?: string | null) => {
   if (!value) return '—';
   return new Intl.DateTimeFormat('pt-BR', {
@@ -43,6 +60,13 @@ const formatDateTime = (value?: string | null) => {
     timeStyle: 'short',
     timeZone: 'UTC',
   }).format(new Date(value));
+};
+
+const sortedHistorico = (historico?: HistoricoUsuarioDTO[]) => {
+  if (!historico) return [];
+  return [...historico].sort(
+    (a, b) => new Date(b.dataEvento).getTime() - new Date(a.dataEvento).getTime()
+  );
 };
 
 const initialsFromName = (name: string) =>
@@ -74,6 +98,8 @@ export const UserManagement: React.FC = () => {
     user: UsuarioDTO;
   } | null>(null);
   const [initialCounts, setInitialCounts] = useState<Record<UsuarioStatus, number> | null>(null);
+  const [timelineUser, setTimelineUser] = useState<UsuarioDTO | null>(null);
+  const [openDetailId, setOpenDetailId] = useState<string | null>(null);
 
   const dataFimParam = useMemo(
     () => (dataFim ? `${dataFim}T23:59:59Z` : undefined),
@@ -591,6 +617,15 @@ export const UserManagement: React.FC = () => {
                               >
                                 Excluir
                               </Button>
+                              {user.historico && user.historico.length > 0 && (
+                                <Button
+                                  variant="outline"
+                                  className="h-9 text-xs px-3"
+                                  onClick={() => setTimelineUser(user)}
+                                >
+                                  Detalhes
+                                </Button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -686,11 +721,17 @@ export const UserManagement: React.FC = () => {
                       </div>
                       {user.codigoConvite && (
                         <p className="text-[11px] text-gray-500 break-all">
-                          {user.codigoConvite}
-                        </p>
-                      )}
+                            {user.codigoConvite}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
+
+                  {user.historico && user.historico.length > 0 && (
+                    <div className="text-[11px] text-gray-500">
+                      Último: {sortedHistorico(user.historico)[0]?.descricao}
+                    </div>
+                  )}
 
                   <div className="space-y-3 text-sm text-gray-200">
                     <div className="bg-dark-900/60 rounded-2xl p-3 border border-gray-800/70 space-y-2">
@@ -759,6 +800,16 @@ export const UserManagement: React.FC = () => {
                       >
                         Excluir
                       </Button>
+                      {user.historico && user.historico.length > 0 && (
+                        <Button
+                          variant="outline"
+                          className="h-11 text-sm col-span-2"
+                          onClick={() => setTimelineUser(user)}
+                        >
+                          <ListOrdered className="w-4 h-4 mr-2" />
+                          Detalhes
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -794,6 +845,61 @@ export const UserManagement: React.FC = () => {
               >
                 Confirmar
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {timelineUser && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+          <div className="bg-dark-900 border border-gray-800 rounded-2xl p-6 w-full max-w-xl shadow-2xl max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <p className="text-sm text-gray-500">Histórico de</p>
+                <h3 className="text-lg font-semibold text-white">{timelineUser.nome}</h3>
+              </div>
+              <Button variant="outline" className="h-9 px-3 text-sm" onClick={() => setTimelineUser(null)}>
+                Fechar
+              </Button>
+            </div>
+            <div className="overflow-y-auto pr-2 space-y-6">
+              {sortedHistorico(timelineUser.historico).map((item, index, arr) => {
+                const isOpen = openDetailId === item.id;
+                return (
+                  <div key={item.id} className="relative pl-8 pb-2">
+                    <div className="absolute left-3 top-0 bottom-0 flex flex-col items-center" aria-hidden>
+                      <span
+                        className={`w-3 h-3 rounded-full border-2 border-dark-900 ${eventoColors[item.evento] || 'bg-gray-500/50'}`}
+                      />
+                      {index !== arr.length - 1 && (
+                        <div className="w-[2px] flex-1 bg-gradient-to-b from-gray-600/60 via-gray-700/40 to-transparent" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-[12px] text-gray-400">
+                      <span
+                        className={`px-2 py-0.5 rounded-full border text-[11px] ${eventoColors[item.evento] || 'bg-gray-700 text-gray-200 border-gray-600'}`}
+                      >
+                        {item.evento}
+                      </span>
+                      <span>{formatDateTime(item.dataEvento)}</span>
+                    </div>
+                    <button
+                      className="mt-1 w-full text-left flex items-center gap-2 text-sm text-white font-semibold focus:outline-none"
+                      onClick={() => setOpenDetailId(isOpen ? null : item.id)}
+                    >
+                      <ChevronRight
+                        className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                      />
+                    </button>
+                    {isOpen && item.detalhes && (
+                      <div className="mt-1 text-sm text-gray-300 whitespace-pre-wrap">{item.detalhes}</div>
+                    )}
+                    {index === arr.length - 1 && <div className="absolute left-2 bottom-0 h-2 bg-dark-900 w-[2px]" aria-hidden />}
+                  </div>
+                );
+              })}
+              {(!timelineUser.historico || timelineUser.historico.length === 0) && (
+                <p className="text-center text-gray-400 text-sm">Sem eventos registrados.</p>
+              )}
             </div>
           </div>
         </div>
