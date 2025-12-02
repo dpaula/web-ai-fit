@@ -11,6 +11,7 @@ const API_BASE_URL =
   'https://iafit.autevia.com.br/my-ia-fitness';
 
 const USUARIOS_BASE = `${API_BASE_URL}/api/usuarios`;
+const USUARIOS_DELETE_BASE = 'http://iafit.autevia.com.br/my-ia-fitness/api/usuarios';
 const PRE_CADASTRO_URL = `${USUARIOS_BASE}/pre-cadastro`;
 
 type ApiError = Error & { status?: number };
@@ -94,10 +95,10 @@ export const desativarUsuario = async (telefone: string): Promise<UsuarioDTO> =>
   return parseResponse<UsuarioDTO>(response);
 };
 
-export const excluirUsuario = async (telefone: string): Promise<void> => {
-  const normalized = normalizePhone(telefone.trim());
-  const encodedPhone = encodeURIComponent(normalized);
-  const response = await fetch(`${USUARIOS_BASE}/${encodedPhone}`, {
+export const excluirUsuario = async (id: string): Promise<void> => {
+  const trimmedId = id.trim();
+  const encodedId = encodeURIComponent(trimmedId);
+  const response = await fetch(`${USUARIOS_DELETE_BASE}/${encodedId}`, {
     method: 'DELETE',
   });
   if (!response.ok) {

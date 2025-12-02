@@ -222,7 +222,7 @@ export const UserManagement: React.FC = () => {
         );
         setSuccessMessage('Usuário desativado');
       } else if (type === 'excluir') {
-        await excluirUsuario(user.telefone);
+        await excluirUsuario(user.id);
         setPaginaUsuarios((prev) =>
           prev
             ? {
